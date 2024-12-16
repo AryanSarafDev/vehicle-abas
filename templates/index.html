@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Alert Data Analysis</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0PI1RnOT3f8G1dqnRjGx-6XVOEI5xNKo&callback=initMap" async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markerclusterer/2.1.3/markerclusterer.min.js"></script> <!-- Marker Clustering -->
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>Vehicle Alert Data Analysis</h1>
+            <p>A comprehensive analysis of the Advanced Driver Assistance System (ADAS) dataset in India.</p>
+        </header>
+
+        <!-- Navigation Menu -->
+        <nav>
+            <ul>
+                <li><a href="#" data-page="spatial-analysis">Spatial Analysis</a></li>
+                <li><a href="#" data-page="alert-frequency">Alert Frequency Analysis</a></li>
+                <li><a href="#" data-page="speed-analysis">Speed Analysis</a></li>
+                <li><a href="#" data-page="correlation-analysis">Correlation Analysis</a></li>
+                <li><a href="#" data-page="driver-behavior">Driver Behavior Analysis</a></li>
+                <li><a href="#" data-page="safety-impact">Safety Impact Analysis</a></li>
+            </ul>
+        </nav>
+
+        <!-- Data Sections -->
+        <section id="charts-section">
+            <div id="chart-container">
+                <div id="chart1" class="chart"></div>
+                <div id="chart2" class="chart"></div>
+                <div id="chart3" class="chart"></div>
+            </div>
+        </section>
+        <section id="map">
+            <h2>Vehicle alert Location Map</h2>
+            <div id="map" style="height: 500px;"></div>
+        </section>
+
+        <section>
+            <h2>Dashboard Features</h2>
+            <ul>
+                <li><strong>Interactive Heatmaps</strong>: Visualize alert occurrences across different locations.</li>
+                <li><strong>Frequency Analysis</strong>: Understand alert patterns and frequencies over time.</li>
+                <li><strong>Speed Analysis</strong>: Examine vehicle speed trends and related alerts.</li>
+                <li><strong>Correlation Insights</strong>: Explore relationships between various factors impacting alerts.</li>
+                <li><strong>Driver Behavior Analysis</strong>: Assess driver behavior based on alert types.</li>
+                <li><strong>Safety Impact analysis</strong>: Assess vehicle speed based on alert.</li>
+                <p>The ADAS Dataset Analysis repository focuses on examining 1.8 million records of ADAS alerts in India. It analyzes the occurrence and characteristics of 8 alert types, including Lane Departure Warning, Hard Brake, and Driver Distracted. The analysis covers spatial distribution, alert frequency, speed, correlation, driver behavior, and safety impacts.</p>
+            </ul>
+
+        <!-- Footer Section -->
+        <footer>
+            <p>&copy; ADAS Dashboard</p>
+        </footer>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Default load spatial analysis
+            loadPage('spatial-analysis');
+
+            // Handle menu item clicks
+            $('nav ul li a').on('click', function(e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                loadPage(page);
+            });
+
+            function loadPage(page) {
+                // Clear previous charts
+                $('#chart1, #chart2, #chart3').empty();
+
+                // Fetch and render charts based on selected page
+                $.getJSON(`/${page}`, function(data) {
+                    switch(page) {
+                        case 'spatial-analysis':
+                            Plotly.newPlot('chart1', JSON.parse(data).data, JSON.parse(data).layout);
+                            break;
+                        
+                        case 'alert-frequency':
+                            Plotly.newPlot('chart1', JSON.parse(data.day_of_week_chart).data, 
+                                           JSON.parse(data.day_of_week_chart).layout);
+                            Plotly.newPlot('chart2', JSON.parse(data.speed_alert_chart).data, 
+                                           JSON.parse(data.speed_alert_chart).layout);
+                            break;
+                        
+                        case 'speed-analysis':
+                            Plotly.newPlot('chart1', JSON.parse(data.speed_time_chart).data, 
+                                           JSON.parse(data.speed_time_chart).layout);
+                            Plotly.newPlot('chart2', JSON.parse(data.speed_distribution_chart).data, 
+                                           JSON.parse(data.speed_distribution_chart).layout);
+                            Plotly.newPlot('chart3', JSON.parse(data.speed_category_chart).data, 
+                                           JSON.parse(data.speed_category_chart).layout);
+                            break;
+                        
+                        case 'correlation-analysis':
+                            Plotly.newPlot('chart1', JSON.parse(data).data, 
+                                           JSON.parse(data).layout);
+                            break;
+                        
+                        case 'driver-behavior':
+                            Plotly.newPlot('chart1', JSON.parse(data).data, 
+                                           JSON.parse(data).layout);
+                            break;
+                        
+                        case 'safety-impact':
+                            Plotly.newPlot('chart1', JSON.parse(data.safety_speed_frequency).data, 
+                                           JSON.parse(data.safety_speed_frequency).layout);
+                            Plotly.newPlot('chart2', JSON.parse(data.safety_speed_distribution).data, 
+                                           JSON.parse(data.safety_speed_distribution).layout);
+                            break;
+                    }
+                });
+            }
+        });
+                // Initialize Google Map
+        function initMap() {
+            const mapOptions = {
+                center: { lat: 21.1702, lng: 79.0849 }, // Default coordinates (Center of India)
+                zoom: 5,
+            };
+            const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            // Create an array of markers from Flask data
+            const locations = {{ locations|tojson }};
+            const markers = [];
+            
+            // Loop through the locations data and add markers
+            locations.forEach(function(location) {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: 'Alert: ' + location.alert + '\n' + 
+                           'Date: ' + location.date + '\n' + 
+                           'Time: ' + location.time + '\n' + 
+                           'Vehicle: ' + location.vehicle + '\n' + 
+                           'Speed: ' + location.speed + ' km/h'
+                });
+                markers.push(marker);
+            });
+
+            // Apply Marker Clustering
+            new MarkerClusterer(map, markers, {
+                imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+            });
+        }
+
+        window.addEventListener('load', function() {
+            initMap();
+        });
+        
+        
+    </script>
+</body>
+</html>
