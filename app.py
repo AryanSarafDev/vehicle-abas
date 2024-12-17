@@ -11,8 +11,8 @@ app = Flask(__name__)
 # Function to load and preprocess data
 def load_data():
     # Read CSV data files into pandas DataFrames
-    df = pd.read_csv('data/iraste_nxt_cas.csv')
-    df1 = pd.read_csv('data/iraste_nxt_casdms.csv')
+    df = pd.read_csv('E:/vyomikaproject/Vehicle-alert/data/iraste_nxt_cas.csv')
+    df1 = pd.read_csv('E:/vyomikaproject/Vehicle-alert/data/iraste_nxt_casdms.csv')
     
     # Concatenate both DataFrames and clean the data
     df = pd.concat([df, df1], axis=0)
@@ -120,6 +120,7 @@ def correlation_analysis():
 
     # Calculate correlation matrix
     correlation_matrix = df1.corr()
+    correlation_matrix = correlation_matrix.round(9)
     
     # Create a heatmap for the correlation matrix
     fig = ff.create_annotated_heatmap(

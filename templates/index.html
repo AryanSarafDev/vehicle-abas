@@ -3,30 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Alert Data Analysis</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <title>ADAS Vehicle Alert Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0PI1RnOT3f8G1dqnRjGx-6XVOEI5xNKo&callback=initMap" async defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/markerclusterer/2.1.3/markerclusterer.min.js"></script> <!-- Marker Clustering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markerclusterer/2.1.3/markerclusterer.min.js"></script>
+    <style>
+        .dashboard-card {
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4">
         <!-- Header Section -->
-        <header>
-            <h1>Vehicle Alert Data Analysis</h1>
-            <p>A comprehensive analysis of the Advanced Driver Assistance System (ADAS) dataset in India.</p>
+        <header class="text-center py-8 bg-blue-600 text-white rounded-b-lg shadow-md">
+            <h1 class="text-4xl font-bold mb-3">ADAS Vehicle Alert Dashboard</h1>
+            <p class="text-xl">Advanced Driver Assistance System Data Analysis</p>
         </header>
 
+        <!-- Dashboard Overview -->
+        <section class="my-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="dashboard-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-blue-600 mb-4">Total Alerts</h3>
+                    <div class="text-4xl font-bold text-gray-800">1,800,000</div>
+                    <p class="text-gray-500 mt-2">Total ADAS alerts analyzed</p>
+                </div>
+                <div class="dashboard-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-600 mb-4">Alert Types</h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>Lane Departure Warning</li>
+                        <li>Hard Brake</li>
+                        <li>Driver Distraction</li>
+                        <li>5 More Alert Types</li>
+                    </ul>
+                </div>
+                <div class="dashboard-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-red-600 mb-4">Key Insights</h3>
+                    <p class="text-gray-700">Comprehensive analysis of vehicle safety, driver behavior, and potential risk factors.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Navigation Menu -->
-        <nav>
-            <ul>
-                <li><a href="#" data-page="spatial-analysis">Spatial Analysis</a></li>
-                <li><a href="#" data-page="alert-frequency">Alert Frequency Analysis</a></li>
-                <li><a href="#" data-page="speed-analysis">Speed Analysis</a></li>
-                <li><a href="#" data-page="correlation-analysis">Correlation Analysis</a></li>
-                <li><a href="#" data-page="driver-behavior">Driver Behavior Analysis</a></li>
-                <li><a href="#" data-page="safety-impact">Safety Impact Analysis</a></li>
+       <nav class="mb-8">
+            <ul class="flex flex-wrap justify-center bg-white rounded-lg shadow-md overflow-hidden">
+                <li class="flex-1 text-center"><a href="#" data-page="spatial-analysis" class="block py-3 hover:bg-blue-100 transition">Spatial Analysis</a></li>
+                <li class="flex-1 text-center"><a href="#" data-page="alert-frequency" class="block py-3 hover:bg-blue-100 transition">Alert Frequency</a></li>
+                <li class="flex-1 text-center"><a href="#" data-page="speed-analysis" class="block py-3 hover:bg-blue-100 transition">Speed Analysis</a></li>
+                <li class="flex-1 text-center"><a href="#" data-page="correlation-analysis" class="block py-3 hover:bg-blue-100 transition">Correlation Analysis</a></li>
+                <li class="flex-1 text-center"><a href="#" data-page="driver-behavior" class="block py-3 hover:bg-blue-100 transition">Driver Behavior</a></li>
+                <li class="flex-1 text-center"><a href="#" data-page="safety-impact" class="block py-3 hover:bg-blue-100 transition">Safety Impact</a></li>
             </ul>
         </nav>
 
@@ -38,26 +71,18 @@
                 <div id="chart3" class="chart"></div>
             </div>
         </section>
-        <section id="map">
-            <h2>Vehicle alert Location Map</h2>
-            <div id="map" style="height: 500px;"></div>
+    
+         <!-- Map Section -->
+         <section class="mb-8">
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-2xl font-semibold text-center mb-4">Vehicle Alert Location Map</h2>
+                <div id="map" style="height: 500px;" class="rounded-lg"></div>
+            </div>
         </section>
 
-        <section>
-            <h2>Dashboard Features</h2>
-            <ul>
-                <li><strong>Interactive Heatmaps</strong>: Visualize alert occurrences across different locations.</li>
-                <li><strong>Frequency Analysis</strong>: Understand alert patterns and frequencies over time.</li>
-                <li><strong>Speed Analysis</strong>: Examine vehicle speed trends and related alerts.</li>
-                <li><strong>Correlation Insights</strong>: Explore relationships between various factors impacting alerts.</li>
-                <li><strong>Driver Behavior Analysis</strong>: Assess driver behavior based on alert types.</li>
-                <li><strong>Safety Impact analysis</strong>: Assess vehicle speed based on alert.</li>
-                <p>The ADAS Dataset Analysis repository focuses on examining 1.8 million records of ADAS alerts in India. It analyzes the occurrence and characteristics of 8 alert types, including Lane Departure Warning, Hard Brake, and Driver Distracted. The analysis covers spatial distribution, alert frequency, speed, correlation, driver behavior, and safety impacts.</p>
-            </ul>
-
         <!-- Footer Section -->
-        <footer>
-            <p>&copy; ADAS Dashboard</p>
+        <footer class="text-center py-4 bg-gray-800 text-white rounded-t-lg">
+            <p>&copy; 2024 ADAS Dashboard | Advanced Vehicle Safety Analysis</p>
         </footer>
     </div>
 
